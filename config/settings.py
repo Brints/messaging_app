@@ -47,15 +47,15 @@ INSTALLED_APPS = [
 
     # 3rd party apps
     'rest_framework',
-    'res_framework_simplejwt',
+    'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
     'drf_yasg',
 
     # Local apps
     'core',
-    'apps.users',
-    'apps.chats'
+    'apps.users.apps.UsersConfig',
+    'apps.chats.apps.ChatsConfig',
 ]
 
 MIDDLEWARE = [
