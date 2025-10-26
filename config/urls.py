@@ -24,13 +24,13 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Messaging API",
         default_version='v1',
-        description="API documentation for the Messaging project",
+        description="API documentation for the Messaging app",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="afiaaniebiet0@gmail.com"),
         license=openapi.License(name="MIT License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny],
 )
 
 urlpatterns = [
@@ -42,6 +42,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # Include application URLs
-    path('api/v1/users/', include('apps.users.urls')),
+    path('api/v1/authentication/', include('apps.authentication.urls')),
     path('api/v1/chats/', include('apps.chats.urls')),
+    path('api/v1/users/', include('apps.users.urls')),
 ]

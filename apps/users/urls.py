@@ -1,3 +1,3 @@
 urlpatterns = [
-    # User URLs will be added here in the future
+    # Add your user-related URL patterns here
 ]
