@@ -54,8 +54,9 @@ INSTALLED_APPS = [
 
     # Local apps
     'core',
-    'apps.users.apps.UsersConfig',
+    'apps.authentication.apps.AuthenticationConfig',
     'apps.chats.apps.ChatsConfig',
+    'apps.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -140,6 +141,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'authentication.User'
 
 # --- 3rd Party App Settings ---
 
@@ -172,8 +174,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
-    'AUTH_HEADER_TYPES': 'Bearer',
-    'USER_ID_FIELD': 'id',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'user_id',
     'USER_ID_CLAIM': 'user_id',
 }
 
