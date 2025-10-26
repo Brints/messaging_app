@@ -27,6 +27,7 @@ mysql-connector-python==9.4.0
 mysqlclient==2.2.7
 packaging==25.0
 parameterized==0.9.0
+phonenumberslite==9.0.17
 prompt_toolkit==3.0.52
 pycodestyle==2.14.0
 pycparser==2.23

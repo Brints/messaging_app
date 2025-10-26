@@ -10,7 +10,7 @@ def validate_email(value):
     if not value:
         raise serializers.ValidationError("Email field cannot be empty.")
     if User.objects.filter(email=value).exists():
-        raise serializers.ValidationError("A authentication with this email already exists.")
+        raise serializers.ValidationError("A user with this email already exists.")
     return value
 
 
@@ -27,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email',
+            'gender',
             'phone_number',
             'role',
             'full_name',
@@ -46,6 +47,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
     username = serializers.CharField(required=False, allow_blank=True)
+    country = serializers.CharField(required=True)
 
     class Meta:
         model = User
@@ -55,14 +57,24 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'phone_number',
+            'country',
             'role',
             'password',
             'confirm_password',
+            'gender',
         ]
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
+            'country': {'required': True},
         }
+
+    def validate_country(self, value):
+        """Validate country code."""
+        from config.country_codes import COUNTRY_CODES
+        if value.upper() not in COUNTRY_CODES:
+            raise serializers.ValidationError("Invalid country code.")
+        return value.upper()
 
     def validate_password(self, value):
         """Validate password strength."""
@@ -71,15 +83,23 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 "Password must be at least 8 characters long and include "
                 "uppercase, lowercase, digit, and special character."
             )
+        return value
 
     def validate(self, data):
         """Validate that password and confirm_password match."""
-        if data['password'] != data.get('confirm_password'):
+        if data['password'] != data['confirm_password']:
             raise serializers.ValidationError("Passwords do not match.")
         data.pop('confirm_password')
 
         data['first_name'] = UserUtils.capitalize_name(data['first_name'])
         data['last_name'] = UserUtils.capitalize_name(data['last_name'])
+
+        # Normalize phone number using country code
+        if data.get('phone_number'):
+            data['phone_number'] = UserUtils.normalize_phone_number(
+                data['phone_number'],
+                data['country']
+            )
 
         if not data.get('username'):
             data['username'] = UserUtils.generate_username(data['first_name'], data['last_name'])
