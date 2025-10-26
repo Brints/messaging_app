@@ -42,7 +42,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # Include application URLs
-    path('api/v1/auth/', include('apps.authentication.urls')),
+    path('api/v1/authentication/', include('apps.authentication.urls')),
     path('api/v1/chats/', include('apps.chats.urls')),
     path('api/v1/users/', include('apps.users.urls')),
 ]
