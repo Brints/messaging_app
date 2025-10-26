@@ -32,17 +32,10 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     """Custom User model that uses email as the unique identifier."""
-
     class Roles(models.TextChoices):
         ADMIN = 'admin', 'Admin'
         GUEST = 'guest', 'Guest'
         HOST = 'host', 'Host'
-
-    class Genders(models.TextChoices):
-        MALE = 'male', 'Male'
-        FEMALE = 'female', 'Female'
-        OTHER = 'other', 'Other'
-
     role = models.CharField(
         max_length=10,
         choices=Roles.choices,
@@ -56,10 +49,8 @@ class User(AbstractUser):
     username = models.CharField(max_length=30, unique=True)
     first_name = models.CharField(max_length=30, blank=False)
     last_name = models.CharField(max_length=30, blank=False)
-    gender = models.CharField(max_length=10, choices=Genders.choices, default=Genders.MALE)
     email = models.EmailField(unique=True, blank=False)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    country = models.CharField(max_length=2, blank=False, help_text="ISO 3166-1 alpha-2 country code", default="NG")
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,10 +1,3 @@
-import re
-
-from rest_framework.response import Response
-
-from config.country_codes import get_country_dial_code
-
-
 class UserUtils:
     """Utility class for User-related operations."""
 
@@ -12,11 +5,6 @@ class UserUtils:
     def format_full_name(user):
         """Return the authentication's full name."""
         return f"{user.first_name} {user.last_name}".strip()
-
-    @staticmethod
-    def normalize_country(country):
-        """Normalize country to capitalize the first letter of each word"""
-        return ' '.join(word.capitalize() for word in country.split())
 
     @staticmethod
     def capitalize_name(name):
@@ -69,84 +57,6 @@ class UserUtils:
         """Generate a strong random password."""
         import random
         import string
-        characters = string.ascii_letters + string.digits + '!@#$%^&*|?'
+        characters = string.ascii_letters + string.digits + '!@#$%^&*()_+-=[]{}|;:,.<>?/'
         password = ''.join(random.choice(characters) for _ in range(length))
         return password
-
-    @staticmethod
-    def normalize_phone_number(phone_number, country_code):
-        """
-        Normalize phone number based on country code.
-
-        Args:
-            phone_number: The phone number to normalize
-            country_code: ISO 3166-1 alpha-2 country code (e.g., 'NG', 'US')
-
-        Returns:
-            Normalized phone number in E.164 format
-        """
-        if not phone_number:
-            return ''
-
-        # Remove all non-digit characters except +
-        phone_number = re.sub(r'[^\d+]', '', phone_number)
-
-        # Get country dial code
-        dial_code = get_country_dial_code(country_code)
-        if not dial_code:
-            return phone_number  # Return original if country code not found
-
-        # Remove the + from dial_code for comparison
-        dial_code_digits = dial_code[1:]
-
-        # Case 1: Starts with 0 (e.g., 08027872415)
-        if phone_number.startswith('0'):
-            phone_number = dial_code + phone_number[1:]
-
-        # Case 2: Starts with country code and 0 (e.g., +23408027872415 or 23408027872415)
-        elif phone_number.startswith(f'+{dial_code_digits}0'):
-            phone_number = f'+{dial_code_digits}' + phone_number[len(dial_code_digits) + 2:]
-        elif phone_number.startswith(f'{dial_code_digits}0'):
-            phone_number = f'+{dial_code_digits}' + phone_number[len(dial_code_digits) + 1:]
-
-        # Case 3: Starts with country code without + (e.g., 2348027872415)
-        elif phone_number.startswith(dial_code_digits):
-            phone_number = '+' + phone_number
-
-        # Case 4: Already has + and country code (e.g., +2348027872415)
-        elif phone_number.startswith(dial_code):
-            pass  # Already in correct format
-
-        # Case 5: Just the number without prefix (e.g., 8027872415)
-        else:
-            phone_number = dial_code + phone_number
-
-        return phone_number
-
-
-class ResponseUtils:
-    """Utility class for standardized API responses."""
-
-    @staticmethod
-    def success_response(message, data=None, status_code=200):
-        """Return a standardized success response."""
-        response_data = {
-            'status_code': status_code,
-            'status': 'success',
-            'message': message,
-        }
-        if data is not None:
-            response_data['data'] = data
-        return Response(response_data, status=status_code)
-
-    @staticmethod
-    def error_response(message, errors=None, status_code=400):
-        """Return a standardized error response."""
-        response_data = {
-            'status_code': status_code,
-            'status': 'error',
-            'message': message,
-        }
-        if errors is not None:
-            response_data['errors'] = errors
-        return Response(response_data, status=status_code)
